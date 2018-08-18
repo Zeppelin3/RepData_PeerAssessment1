@@ -1,50 +1,27 @@
----
-title: "PA1_template.Rmd"
-output: html_document
----
-1. Code for reading in the dataset and/or processing the data
 
-```{r}
+
 setwd("C:/Users/chapp/Documents/Coursera/Reproducable research/RepData_PeerAssessment1/activity")
+
 
 activity<-read.csv("activity.csv")
 
 aggact<-aggregate(steps ~ date, activity, sum, na.action = na.pass)
 
-```
-
-2. Histogram of the total number of steps taken each day
-
-```{r}
 hist(aggact$steps, breaks=53, xlab = "Steps per day", main="Histogram of number of steps per day")
 
-```
-
-3. Mean and median number of steps taken each day
-
-```{r}
 mean(aggact$steps, na.rm=TRUE)
 
 median(aggact$steps, na.rm=TRUE)
 
-```
-
-4. Time series plot of the average number of steps taken
-
-```{r}
 aggact1<-aggregate(steps ~ interval, activity, mean)
 
 
 plot(aggact1$interval, aggact1$steps, type="l", xlab="Intervals", ylab="Steps taken", 
      main = "Time series plot of steps per interval")
-```
 
-5. The 5-minute interval that, on average, contains the maximum number of steps
-```{r}
 aggact1[which.max(aggact1$steps),]
-```
-6. Code to describe and show a strategy for imputing missing data
-```{r}
+
+
 activity1<-activity
 sum(is.na(activity1))
 
@@ -53,9 +30,7 @@ na_act <- which(is.na(activity1$steps))
 mean_vec <- rep(mean(activity1$steps, na.rm=TRUE), times=length(na_act))
 
 activity1[na_act, "steps"] <- mean_vec
-```
-7. Histogram of the total number of steps taken each day after missing values are imputed
-```{r}
+
 aggact2<-aggregate(steps ~ date, activity1, sum)
 
 hist(aggact2$steps, breaks=53, xlab = "Steps per day", main="Histogram of number of steps per day")
@@ -63,23 +38,9 @@ hist(aggact2$steps, breaks=53, xlab = "Steps per day", main="Histogram of number
 mean(aggact2$steps)
 
 median(aggact2$steps)
-```
-The reported mean and median do not differ from the two datasets 
 
 
-
-8.Panel plot comparing the average number of steps taken per 5-minute interval across weekdays and weekends
-
-```{r}
 activity1$day <- ifelse(weekdays(as.Date(activity1$date)) == "Saturday" | 
             weekdays(as.Date(activity1$date)) == "Sunday", "weekend", "weekday")
 
-aggact3<-aggregate(steps ~ interval + day, activity1, mean)
 
-
-library(lattice)
-plot <- xyplot(aggact3$steps ~ aggact3$interval | aggact3$day, 
-                layout = c(1, 2), type = "l", 
-                xlab = "Interval", ylab = "Number of steps")
-print(plot)
-```
